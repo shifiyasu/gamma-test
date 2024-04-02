@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gamma_test/config/colors.dart';
+import 'package:gamma_test/config/sizes.dart';
 import 'package:gamma_test/widgets/dark_overlay_gradient.dart';
 
 class ContentImagePoster extends StatelessWidget {
@@ -11,7 +12,6 @@ class ContentImagePoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height;
     return Container(
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
@@ -29,7 +29,7 @@ class ContentImagePoster extends StatelessWidget {
                 fit: BoxFit.fitWidth,
               ),
               if (hasDarkBottomGradient)
-                DarkOverlayGradient(height: height * .1)
+                DarkOverlayGradient(height: displayHeight(context) * .1)
             ],
           ),
         ),

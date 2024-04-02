@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:gamma_test/config/colors.dart';
+import 'package:gamma_test/config/sizes.dart';
 import 'package:gamma_test/config/spacing.dart';
 import 'package:gamma_test/config/text_styles.dart';
 import 'package:gamma_test/logic/movies_cubit.dart';
@@ -27,6 +28,9 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: BlocBuilder<MoviesCubit, MoviesState>(
           builder: (context, state) => state.maybeWhen(
+            // putting an empty widget here because this cubit can never get to
+            // a 'failed' state in this example as there are no network calls or
+            //external factors
             orElse: () => const SizedBox.shrink(),
             loading: () => _buildLoadingWidget(context),
             loaded: (allFilms, allSeries) => Column(
@@ -52,38 +56,38 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildLoadingWidget(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(children: [
-        kVerticalSpace12,
-        const LoadingImagePoster(),
-        kVerticalSpace12,
-        ...List.generate(
-          3,
-          (index) => SizedBox(
-            height: height * .3,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => const LoadingImagePoster(),
-              itemCount: 5,
+      child: Column(
+        children: [
+          kVerticalSpace12,
+          const LoadingImagePoster(),
+          kVerticalSpace12,
+          ...List.generate(
+            3,
+            (index) => SizedBox(
+              height: displayHeight(context) * .3,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) => const LoadingImagePoster(),
+                itemCount: 5,
+              ),
             ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 
   Widget _buildLargeFilmPreview(
       {required BuildContext context, required List<Film> films}) {
-    final height = MediaQuery.sizeOf(context).height;
     return SizedBox(
-      height: height * .75,
+      height: displayHeight(context) * .75,
       child: Stack(
         children: [
           FlutterCarousel(
             options: CarouselOptions(
-              height: height * .75,
+              height: displayHeight(context) * .75,
               showIndicator: true,
               slideIndicator: const CircularSlideIndicator(
                 itemSpacing: 16,
@@ -108,7 +112,8 @@ class HomeScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           fit: BoxFit.cover,
                         ),
-                        DarkOverlayGradient(height: height * .3),
+                        DarkOverlayGradient(
+                            height: displayHeight(context) * .3),
                       ],
                     ),
                   );
@@ -117,7 +122,7 @@ class HomeScreen extends StatelessWidget {
             }).toList(),
           ),
           Padding(
-            padding: EdgeInsets.only(bottom: height * .05),
+            padding: EdgeInsets.only(bottom: displayHeight(context) * .05),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: WatchNowButton(
@@ -134,7 +139,6 @@ class HomeScreen extends StatelessWidget {
       {required BuildContext context,
       required List<Film> films,
       required String sectionTitle}) {
-    final height = MediaQuery.sizeOf(context).height;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -143,7 +147,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           _buildSectionHeader(title: sectionTitle),
           SizedBox(
-            height: height * .25,
+            height: displayHeight(context) * .25,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) =>
@@ -158,7 +162,6 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildContinueWatching(
       {required BuildContext context, required List<Series> series}) {
-    final height = MediaQuery.sizeOf(context).height;
     final random = Random();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -168,7 +171,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           _buildSectionHeader(title: 'Continue watching'),
           SizedBox(
-            height: height * .25,
+            height: displayHeight(context) * .25,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: series.length,
@@ -206,7 +209,8 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          // 'S1:E4',
+                          // selecting a random episode just for the sake of this test,
+                          // in a real world use, we'd likely get this data from the backend as well
                           'S${random.nextInt(series[index].numberOfSeasons) + 1}:E${random.nextInt(series[index].numberOfEpisodesPerSeason) + 1}',
                           style: TextStyles.titleSmall,
                         ),
